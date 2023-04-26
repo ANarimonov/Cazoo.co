@@ -3,6 +3,7 @@ package com.anarimonov.cazoo.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,10 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity(name = "makers")
-public class Maker {
+@Entity(name = "favorites")
+public class Favorite {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
+    @ManyToOne
+    private User user;
+    @ManyToOne
+    private Car car;
 }

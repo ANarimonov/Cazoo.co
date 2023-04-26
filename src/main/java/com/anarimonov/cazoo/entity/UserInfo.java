@@ -10,9 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity(name = "attachmentContents")
-public class AttachmentContent {
+@Entity(name = "users_infos")
+public class UserInfo {
     @Id
     @GeneratedValue
     private Long id;
+    private String fullName;
+    private String birthday;
+    private String region;
+    private String city;
 }

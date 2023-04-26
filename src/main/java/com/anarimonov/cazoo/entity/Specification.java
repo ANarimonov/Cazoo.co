@@ -15,4 +15,16 @@ public class Specification {
     @Id
     @GeneratedValue
     private Long id;
+    private int topSpeed;
+    private double acceleration;
+    private int enginePower;
+    private int length;
+    private int valves;
+    private int cylinders;
+    private double height;
+    private double width;
+    private int wheelbase;
+    private int fuelCapacity;
+    private int weight;
+    private int bootSpace;
 }

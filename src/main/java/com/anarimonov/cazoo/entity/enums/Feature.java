@@ -1,5 +1,28 @@
 package com.anarimonov.cazoo.entity.enums;
 
 public enum Feature {
-
+    ACTIVE_CRUISE_CONTROL,
+    AIR_CON,
+    ALLOYS,
+    BLUETOOTH,
+    CD_PLAYER,
+    CRUISE_CONTROL,
+    DAB,
+    DVD_PLAYER,
+    HEAD_UP_DISPLAY,
+    HEATED_SEATS,
+    HEATED_WINDSCREEN,
+    KEYLESS_ENTRY,
+    LEATHER_SEATS,
+    METALLIC_PAINT,
+    PADDLE_SHIFT,
+    PARKING_CAMERA,
+    PARKING_SENSORS,
+    PREMIUM_SOUND_SYSTEM,
+    PRIVACY_GLASS,
+    SAT_NAV,
+    SELF_PARKING,
+    START_STOP_TECHNOLOGY,
+    SUNROOF,
+    TOWBAR
 }

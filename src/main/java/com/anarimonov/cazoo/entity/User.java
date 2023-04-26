@@ -1,8 +1,7 @@
 package com.anarimonov.cazoo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.anarimonov.cazoo.entity.enums.Role;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,8 +15,8 @@ public class User {
     @GeneratedValue
     private Long id;
     private String phoneNumber;
-    private String fullName;
-    private String birthday;
-    private String region;
-    private String city;
+    private String password;
+    private Role role;
+    @OneToOne(cascade = CascadeType.ALL)
+    private UserInfo userInfo;
 }
