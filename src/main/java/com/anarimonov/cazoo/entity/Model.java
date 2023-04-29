@@ -1,6 +1,8 @@
 package com.anarimonov.cazoo.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,13 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity(name = "imperfections")
-public class Imperfection {
+@Entity(name = "models")
+public class Model {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToOne
-    private Attachment attachment;
-    @Column(columnDefinition = "text")
-    private String description;
+    private String name;
 }

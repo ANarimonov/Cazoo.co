@@ -20,15 +20,16 @@ public class Car {
     private Long id;
     @ManyToOne
     private Maker maker;
-    private String model;
+    @ManyToOne
+    private Model model;
     private Long price;
     @Enumerated(value = EnumType.STRING)
     private FuelType fuelType;
-    private String issuedYear;
-    private int mileage;
+    private Integer manufacturedYear;
+    private Integer mileage;
     @Enumerated(value = EnumType.STRING)
     private Gearbox gearbox;
-    private float engine;
+    private Double engine;
     @Enumerated(value = EnumType.STRING)
     private Color color;
     @Enumerated(value = EnumType.STRING)
@@ -36,7 +37,7 @@ public class Car {
     @Enumerated(value = EnumType.STRING)
     private List<Feature> features;
     @OneToMany
-    private List<Attachment> photos;
+    private List<Attachment> attachments;
     @OneToMany
     private List<Imperfection> imperfections;
     @CreationTimestamp
