@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ImperfectionController {
     private final ImperfectionService imperfectionService;
-    private final ImperfectionRepository imperfectionRepository = imperfectionService.imperfectionRepository;
+    private final ImperfectionRepository imperfectionRepository;
     @GetMapping("/by-car/{carId}")
     private HttpEntity getImperfectionsByCarId(@PathVariable String carId) {
         Imperfection imperfection = imperfectionRepository.findByCarId(Long.parseLong(carId));

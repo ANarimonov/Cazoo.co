@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SpecificationController {
     private final SpecificationService specificationService;
-    private final SpecificationRepository specificationRepository = specificationService.specificationRepository;
+    private final SpecificationRepository specificationRepository;
 
     @GetMapping("/{id}")
     private HttpEntity getSpecificationById(@PathVariable String id) {

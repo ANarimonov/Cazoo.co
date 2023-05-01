@@ -26,6 +26,5 @@ public class Specification {
     private Integer weight;
     private Integer bootSpace;
     @OneToOne
-    @Column(nullable = false)
     private Car car;
 }
