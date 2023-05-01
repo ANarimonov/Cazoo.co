@@ -14,7 +14,11 @@ public class Imperfection {
     @GeneratedValue
     private Long id;
     @OneToOne
+    @Column(nullable = false)
     private Attachment attachment;
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", nullable = false)
     private String description;
+    @OneToOne
+    @Column(nullable = false)
+    private Car car;
 }

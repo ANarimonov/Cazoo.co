@@ -23,13 +23,13 @@ public class Car {
     @ManyToOne
     private Model model;
     private Long price;
+    private Integer manufacturedYear;
+    private Double engine;
     @Enumerated(value = EnumType.STRING)
     private FuelType fuelType;
-    private Integer manufacturedYear;
     private Integer mileage;
     @Enumerated(value = EnumType.STRING)
     private Gearbox gearbox;
-    private Double engine;
     @Enumerated(value = EnumType.STRING)
     private Color color;
     @Enumerated(value = EnumType.STRING)
@@ -38,10 +38,21 @@ public class Car {
     private List<Feature> features;
     @OneToMany
     private List<Attachment> attachments;
-    @OneToMany
-    private List<Imperfection> imperfections;
     @CreationTimestamp
     private Timestamp registrationDate;
-    @OneToOne
-    private Specification specification;
+
+    public Car(Maker maker, Model model, Long price, Integer manufacturedYear, Double engine, FuelType fuelType, Integer mileage, Gearbox gearbox, Color color, BodyType bodyType, List<Feature> features, List<Attachment> attachments) {
+        this.maker = maker;
+        this.model = model;
+        this.price = price;
+        this.manufacturedYear = manufacturedYear;
+        this.engine = engine;
+        this.fuelType = fuelType;
+        this.mileage = mileage;
+        this.gearbox = gearbox;
+        this.color = color;
+        this.bodyType = bodyType;
+        this.features = features;
+        this.attachments = attachments;
+    }
 }

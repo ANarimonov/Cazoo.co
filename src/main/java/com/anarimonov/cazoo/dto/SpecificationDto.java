@@ -1,17 +1,11 @@
-package com.anarimonov.cazoo.entity;
+package com.anarimonov.cazoo.dto;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-@Entity(name = "specifications")
-public class Specification {
-    @Id
-    @GeneratedValue
+@Getter
+@Setter
+public class SpecificationDto {
     private Long id;
     private Integer topSpeed;
     private Double acceleration;
@@ -25,7 +19,5 @@ public class Specification {
     private Integer fuelCapacity;
     private Integer weight;
     private Integer bootSpace;
-    @OneToOne
-    @Column(nullable = false)
-    private Car car;
+    private Long carId;
 }

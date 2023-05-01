@@ -23,11 +23,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CarService {
-    private final CarRepository carRepository;
+    public final CarRepository carRepository;
     private final MakerRepository makerRepository;
-    private final SpecificationRepository specificationRepository;
-    private final ImperfectionRepository imperfectionRepository;
-    private final PhotoRepository photoRepository;
+    private final AttachmentRepository attachmentRepository;
     private final EntityManager entityManager;
     private final ModelRepository modelRepository;
 
@@ -54,9 +52,7 @@ public class CarService {
             car.setMileage(carDto.getMileage());
             car.setModel(modelRepository.findById(carDto.getModelId()).orElse(null));
             car.setPrice(carDto.getPrice());
-            car.setSpecification(specificationRepository.findById(carDto.getSpecificationId()).orElse(null));
-            car.setImperfections(imperfectionRepository.findAllById(carDto.getImperfectionsIds()));
-            car.setAttachments(photoRepository.findAllById(carDto.getPhotosIds()));
+            car.setAttachments(attachmentRepository.findAllById(carDto.getPhotosIds()));
             carRepository.save(car);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

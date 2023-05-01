@@ -6,4 +6,5 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface ImperfectionRepository extends JpaRepository<Imperfection, Long> {
+    Imperfection findByCarId(Long car_id);
 }

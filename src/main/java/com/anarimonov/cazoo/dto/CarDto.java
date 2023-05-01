@@ -23,6 +23,4 @@ public class CarDto {
     private String bodyType;
     private List<String> features;
     private List<Long> photosIds;
-    private List<Long> imperfectionsIds;
-    private Long specificationId;
 }
