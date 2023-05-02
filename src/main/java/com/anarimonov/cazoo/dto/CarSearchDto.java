@@ -13,6 +13,8 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CarSearchDto {
+    Long makerId;
+    Long modelId;
     Long minPrice;
     Long maxPrice;
     List<String> fuelType;

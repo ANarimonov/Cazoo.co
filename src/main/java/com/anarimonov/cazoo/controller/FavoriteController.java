@@ -7,7 +7,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/fea")
+@RequestMapping("/api/favorite")
 @RequiredArgsConstructor
 public class FavoriteController {
     private final FavoriteService favoriteService;

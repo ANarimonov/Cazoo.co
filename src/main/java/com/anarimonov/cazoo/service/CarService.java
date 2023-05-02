@@ -70,6 +70,8 @@ public class CarService {
         CriteriaQuery<Car> criteriaQuery = builder.createQuery(Car.class);
         Root<Car> root = criteriaQuery.from(Car.class);
         List<Predicate> searchCriteria = new ArrayList<>();
+        Long makerId = carSearchDto.getMakerId();
+        Long modelId = carSearchDto.getModelId();
         Long maxPrice = carSearchDto.getMaxPrice();
         Long minPrice = carSearchDto.getMinPrice();
         Double minEngine = carSearchDto.getMinEngine();
@@ -83,6 +85,10 @@ public class CarService {
         List<String> color = carSearchDto.getColor();
         List<String> features = carSearchDto.getFeatures();
         List<String> fuelType = carSearchDto.getFuelType();
+        if (makerId != null)
+            searchCriteria.add(builder.equal(root.get("maker"), makerRepository.findById(makerId).get()));
+        if (modelId != null)
+            searchCriteria.add(builder.equal(root.get("model"), modelRepository.findById(modelId).get()));
         if (minPrice != null)
             searchCriteria.add(builder.between(root.get("price"), minPrice, maxPrice == null ? Long.MAX_VALUE : maxPrice));
         if (minPrice == null && maxPrice != null)
