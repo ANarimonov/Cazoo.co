@@ -6,6 +6,7 @@ import com.anarimonov.cazoo.repository.CarRepository;
 import com.anarimonov.cazoo.repository.SpecificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,6 @@ public class SpecificationService {
         specification.setTopSpeed(specificationDto.getTopSpeed());
         specification.setFuelCapacity(specificationDto.getFuelCapacity());
         specificationRepository.save(specification);
-        return ResponseEntity.ok("success");
+        return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
     }
 }

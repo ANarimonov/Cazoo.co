@@ -4,6 +4,7 @@ import com.anarimonov.cazoo.entity.Attachment;
 import com.anarimonov.cazoo.repository.AttachmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +45,7 @@ public class AttachmentController {
                     file.getContentType(),
                     file.getBytes()
             ));
-            return ResponseEntity.ok("success");
+            return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

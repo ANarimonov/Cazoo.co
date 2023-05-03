@@ -7,6 +7,7 @@ import com.anarimonov.cazoo.repository.CarRepository;
 import com.anarimonov.cazoo.repository.ImperfectionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,10 @@ public class ImperfectionService {
     public HttpEntity addImperfection(ImperfectionDto imperfectionDto) {
         Imperfection imperfection = new Imperfection();
         imperfection.setId(imperfectionDto.getId());
-        imperfection.setDescription(imperfectionDto.getDescription());
         imperfection.setCar(carRepository.findById(imperfectionDto.getCarId()).orElseThrow(() -> new RuntimeException("Car id must not be null")));
         imperfection.setAttachment(attachmentRepository.findById(imperfectionDto.getAttachmentId()).orElseThrow(() -> new RuntimeException("Attachment id must not be null")));
+        imperfection.setDescription(imperfectionDto.getDescription());
         imperfectionRepository.save(imperfection);
-        return ResponseEntity.ok("success");
+        return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
     }
 }

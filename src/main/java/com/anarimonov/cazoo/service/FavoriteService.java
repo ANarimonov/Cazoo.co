@@ -7,6 +7,7 @@ import com.anarimonov.cazoo.repository.FavoriteRepository;
 import com.anarimonov.cazoo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,7 @@ public class FavoriteService {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.ok("success");
+        return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
     }
 
     public HttpEntity deleteFavorite(String favoriteId) {
