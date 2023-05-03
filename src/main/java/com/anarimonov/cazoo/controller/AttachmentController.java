@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -21,15 +22,17 @@ public class AttachmentController {
     @PostMapping
     private HttpEntity uploadFiles(@RequestPart(value = "file") List<MultipartFile> files) {
         try {
+            List<Long> ids = new ArrayList<>();
             for (MultipartFile file : files) {
-                attachmentRepository.save(new Attachment(
+                Attachment attachment = attachmentRepository.save(new Attachment(
                         file.getOriginalFilename(),
                         file.getSize(),
                         file.getContentType(),
                         file.getBytes()
                 ));
+                ids.add(attachment.getId());
             }
-            return ResponseEntity.ok("success");
+            return ResponseEntity.ok(ids);
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
