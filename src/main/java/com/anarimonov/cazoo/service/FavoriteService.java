@@ -21,12 +21,12 @@ public class FavoriteService {
     private final CarRepository carRepository;
 
 
-    public HttpEntity getFavoritesByUser(String userId) {
+    public HttpEntity<?> getFavoritesByUser(String userId) {
         List<Favorite> favorites = favoriteRepository.findByUserId(Long.parseLong(userId));
         return ResponseEntity.ok(favorites);
     }
 
-    public HttpEntity addCarToFavorites(FavoriteDto favoriteDto) {
+    public HttpEntity<?> addCarToFavorites(FavoriteDto favoriteDto) {
         Favorite favorite = new Favorite();
         try {
             favorite.setUser(userRepository.findById(favoriteDto.getUserId()).get());
@@ -38,7 +38,7 @@ public class FavoriteService {
         return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
     }
 
-    public HttpEntity deleteFavorite(String favoriteId) {
+    public HttpEntity<?> deleteFavorite(String favoriteId) {
         try {
             favoriteRepository.deleteById(Long.parseLong(favoriteId));
         } catch (Exception e) {

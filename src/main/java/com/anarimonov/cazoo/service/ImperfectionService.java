@@ -18,7 +18,7 @@ public class ImperfectionService {
     private final CarRepository carRepository;
     private final AttachmentRepository attachmentRepository;
 
-    public HttpEntity addImperfection(ImperfectionDto imperfectionDto) {
+    public HttpEntity<?> addImperfection(ImperfectionDto imperfectionDto) {
         Imperfection imperfection = new Imperfection();
         imperfection.setId(imperfectionDto.getId());
         imperfection.setCar(carRepository.findById(imperfectionDto.getCarId()).orElseThrow(() -> new RuntimeException("Car id must not be null")));

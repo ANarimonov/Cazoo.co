@@ -19,13 +19,13 @@ public class ModelController {
     private final MakerRepository makerRepository;
     private final ModelRepository modelRepository;
     @GetMapping("/{makerId}")
-    private HttpEntity getModelByMaker(@PathVariable String makerId) {
+    private HttpEntity<?> getModelByMaker(@PathVariable String makerId) {
         List<Model> models = modelRepository.findByMakerId(Long.parseLong(makerId));
         return ResponseEntity.ok(models);
     }
 
     @PostMapping
-    private HttpEntity addModel(@RequestBody ModelDto modelDto) {
+    private HttpEntity<?> addModel(@RequestBody ModelDto modelDto) {
         Model model = new Model();
         try {
 
@@ -40,7 +40,7 @@ public class ModelController {
     }
 
     @DeleteMapping("/{id}")
-    private HttpEntity delete(@PathVariable String id) {
+    private HttpEntity<?> delete(@PathVariable String id) {
         modelRepository.deleteById(Long.parseLong(id));
         return ResponseEntity.ok("successfully deleted");
     }

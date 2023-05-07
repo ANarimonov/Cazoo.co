@@ -30,12 +30,12 @@ public class CarService {
     private final EntityManager entityManager;
     private final ModelRepository modelRepository;
 
-    public HttpEntity getCars(PageRequest pageRequest) {
+    public HttpEntity<?> getCars(PageRequest pageRequest) {
         Page<Car> cars = carRepository.findAll(pageRequest);
         return ResponseEntity.ok(cars);
     }
 
-    public HttpEntity addCar(CarDto carDto) {
+    public HttpEntity<?> addCar(CarDto carDto) {
         Car car = new Car();
         try {
             car.setId(carDto.getId());
@@ -61,12 +61,12 @@ public class CarService {
         return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
     }
 
-    public HttpEntity deleteCar(String id) {
+    public HttpEntity<?> deleteCar(String id) {
         carRepository.deleteById(Long.parseLong(id));
         return ResponseEntity.ok("success");
     }
 
-    public HttpEntity getCars(CarSearchDto carSearchDto) {
+    public HttpEntity<?> getCars(CarSearchDto carSearchDto, boolean count) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Car> criteriaQuery = builder.createQuery(Car.class);
         Root<Car> root = criteriaQuery.from(Car.class);
@@ -91,19 +91,23 @@ public class CarService {
         if (modelId != null)
             searchCriteria.add(builder.equal(root.get("model"), modelRepository.findById(modelId).get()));
         if (minPrice != null)
-            searchCriteria.add(builder.between(root.get("price"), minPrice, maxPrice == null ? Long.MAX_VALUE : maxPrice));
+            searchCriteria
+                    .add(builder.between(root.get("price"), minPrice, maxPrice == null ? Long.MAX_VALUE : maxPrice));
         if (minPrice == null && maxPrice != null)
             searchCriteria.add(builder.between(root.get("price"), 0L, maxPrice));
         if (minEngine != null)
-            searchCriteria.add(builder.between(root.get("engine"), minEngine, maxEngine == null ? Long.MAX_VALUE : maxEngine));
+            searchCriteria.add(
+                    builder.between(root.get("engine"), minEngine, maxEngine == null ? Long.MAX_VALUE : maxEngine));
         if (minEngine == null && maxEngine != null)
             searchCriteria.add(builder.between(root.get("engine"), 0.0, maxEngine));
         if (minMileage != null)
-            searchCriteria.add(builder.between(root.get("mileage"), minMileage, maxMileage == null ? Integer.MAX_VALUE : maxMileage));
+            searchCriteria.add(builder.between(root.get("mileage"), minMileage,
+                    maxMileage == null ? Integer.MAX_VALUE : maxMileage));
         if (minMileage == null && maxMileage != null)
             searchCriteria.add(builder.between(root.get("mileage"), 0, maxMileage));
         if (minManufacturedYear != null)
-            searchCriteria.add(builder.between(root.get("manufacturedYear"), minManufacturedYear, maxManufacturedYear == null ? Integer.MAX_VALUE : maxManufacturedYear));
+            searchCriteria.add(builder.between(root.get("manufacturedYear"), minManufacturedYear,
+                    maxManufacturedYear == null ? Integer.MAX_VALUE : maxManufacturedYear));
         if (minManufacturedYear == null && maxManufacturedYear != null)
             searchCriteria.add(builder.between(root.get("manufacturedYear"), 0, maxManufacturedYear));
         if (gearbox != null && !gearbox.isEmpty())
@@ -117,6 +121,13 @@ public class CarService {
         if (fuelType != null && !fuelType.isEmpty())
             searchCriteria.add(root.get("fuelType").in(fuelType.stream().map(FuelType::valueOf).toList()));
 
+        if (count) {
+            CriteriaQuery<Long> cq = builder.createQuery(Long.class);
+            cq.multiselect(builder.count(root))
+                    .where(builder.and(searchCriteria.toArray(new Predicate[searchCriteria.size()])));
+            Long countCars = entityManager.createQuery(cq).getSingleResult();
+            return ResponseEntity.ok(countCars);
+        }
         criteriaQuery.select(root).where(builder.and(searchCriteria.toArray(new Predicate[searchCriteria.size()])));
         return ResponseEntity.ok(entityManager.createQuery(criteriaQuery).getResultList());
     }

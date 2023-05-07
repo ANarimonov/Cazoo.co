@@ -16,7 +16,7 @@ public class CarController {
     private final CarService carService;
 
     @GetMapping
-    private HttpEntity getCars(
+    private HttpEntity<?> getCars(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size) {
         try {
@@ -28,17 +28,22 @@ public class CarController {
     }
 
     @GetMapping("/filter")
-    private HttpEntity getCarsByFilter(CarSearchDto carSearchDto) {
-        return carService.getCars(carSearchDto);
+    private HttpEntity<?> getCarsByFilter(CarSearchDto carSearchDto) {
+        return carService.getCars(carSearchDto, false);
+    }
+
+    @GetMapping("/filter/count")
+    private HttpEntity<?> getCarsCountByFilter(CarSearchDto carSearchDto) {
+        return carService.getCars(carSearchDto, true);
     }
 
     @PostMapping
-    private HttpEntity addCar(@RequestBody CarDto carDto) {
+    private HttpEntity<?> addCar(@RequestBody CarDto carDto) {
         return carService.addCar(carDto);
     }
 
     @DeleteMapping("/{id}")
-    private HttpEntity deleteCar(@PathVariable String id) {
+    private HttpEntity<?> deleteCar(@PathVariable String id) {
         return carService.deleteCar(id);
     }
 }

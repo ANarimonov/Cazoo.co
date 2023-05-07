@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity(name = "makers")
 public class Maker {
+    
+    public Maker(String name) {
+        this.name = name;
+    }
     @Id
     @GeneratedValue
     private Long id;

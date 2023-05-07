@@ -16,7 +16,7 @@ public class SpecificationService {
     public final SpecificationRepository specificationRepository;
     private final CarRepository carRepository;
 
-    public HttpEntity addSpecification(SpecificationDto specificationDto) {
+    public HttpEntity<?> addSpecification(SpecificationDto specificationDto) {
         Specification specification = new Specification();
         specification.setId(specificationDto.getId());
         specification.setCar(carRepository.findById(specificationDto.getCarId()).orElseThrow(() -> new RuntimeException("Car id must not be null")));

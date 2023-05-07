@@ -7,5 +7,6 @@ public enum BodyType {
     HATCHBACK,
     MPV,
     SALOON,
-    SUV
+    SUV,
+    OTHER
 }

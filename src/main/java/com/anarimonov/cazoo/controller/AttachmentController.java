@@ -20,7 +20,7 @@ public class AttachmentController {
     private final AttachmentRepository attachmentRepository;
 
     @PostMapping
-    private HttpEntity uploadFiles(@RequestPart(value = "file") List<MultipartFile> files) {
+    private HttpEntity<?> uploadFiles(@RequestPart(value = "file") List<MultipartFile> files) {
         try {
             List<Long> ids = new ArrayList<>();
             for (MultipartFile file : files) {
@@ -39,7 +39,7 @@ public class AttachmentController {
     }
 
     @PostMapping("/{id}")
-    private HttpEntity uploadFile(@RequestPart(value = "file") MultipartFile file, @PathVariable String id) {
+    private HttpEntity<?> uploadFile(@RequestPart(value = "file") MultipartFile file, @PathVariable String id) {
         try {
             attachmentRepository.save(new Attachment(
                     Long.parseLong(id),
@@ -55,7 +55,7 @@ public class AttachmentController {
     }
 
     @DeleteMapping("/{id}")
-    private HttpEntity deleteFile(@PathVariable String id) {
+    private HttpEntity<?> deleteFile(@PathVariable String id) {
         attachmentRepository.deleteById(Long.parseLong(id));
         return ResponseEntity.ok("successfully deleted");
     }

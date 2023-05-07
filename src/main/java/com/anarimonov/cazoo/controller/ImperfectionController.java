@@ -16,24 +16,24 @@ public class ImperfectionController {
     private final ImperfectionService imperfectionService;
     private final ImperfectionRepository imperfectionRepository;
     @GetMapping("/by-car/{carId}")
-    private HttpEntity getImperfectionsByCarId(@PathVariable String carId) {
+    private HttpEntity<?> getImperfectionsByCarId(@PathVariable String carId) {
         Imperfection imperfection = imperfectionRepository.findByCarId(Long.parseLong(carId));
         return ResponseEntity.ok(imperfection);
     }
 
     @GetMapping("/{imperfectionId}")
-    private HttpEntity getImperfectionById(@PathVariable String imperfectionId) {
+    private HttpEntity<?> getImperfectionById(@PathVariable String imperfectionId) {
         Imperfection imperfection = imperfectionRepository.findById(Long.parseLong(imperfectionId)).orElseThrow(() -> new RuntimeException("Imperfection not found"));
         return ResponseEntity.ok(imperfection);
     }
 
     @PostMapping("/add")
-    private HttpEntity addImperfection(@RequestBody ImperfectionDto imperfectionDto) {
+    private HttpEntity<?> addImperfection(@RequestBody ImperfectionDto imperfectionDto) {
         return imperfectionService.addImperfection(imperfectionDto);
     }
 
     @DeleteMapping("/{id}")
-    private HttpEntity delete(@PathVariable String id) {
+    private HttpEntity<?> delete(@PathVariable String id) {
         imperfectionRepository.deleteById(Long.parseLong(id));
         return ResponseEntity.ok("successfully deleted");
     }
