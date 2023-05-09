@@ -6,11 +6,14 @@ import com.anarimonov.cazoo.entity.Car;
 import com.anarimonov.cazoo.entity.enums.*;
 import com.anarimonov.cazoo.repository.*;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import nonapi.io.github.classgraph.concurrency.SingletonMap.NewInstanceFactory;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
@@ -121,14 +124,9 @@ public class CarService {
         if (fuelType != null && !fuelType.isEmpty())
             searchCriteria.add(root.get("fuelType").in(fuelType.stream().map(FuelType::valueOf).toList()));
 
-        if (count) {
-            CriteriaQuery<Long> cq = builder.createQuery(Long.class);
-            cq.multiselect(builder.count(root))
-                    .where(builder.and(searchCriteria.toArray(new Predicate[searchCriteria.size()])));
-            Long countCars = entityManager.createQuery(cq).getSingleResult();
-            return ResponseEntity.ok(countCars);
-        }
-        criteriaQuery.select(root).where(builder.and(searchCriteria.toArray(new Predicate[searchCriteria.size()])));
-        return ResponseEntity.ok(entityManager.createQuery(criteriaQuery).getResultList());
+        Predicate[] array = searchCriteria.toArray(new Predicate[searchCriteria.size()]);
+        criteriaQuery.select(root).where(builder.and(array));
+        List<Car> result = entityManager.createQuery(criteriaQuery).getResultList();
+        return ResponseEntity.ok(count ? result.size() : result);
     }
 }
