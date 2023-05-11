@@ -47,6 +47,12 @@ public class DataLoader implements CommandLineRunner {
             carRepository.save(new Car(maker2, chazor, 285_736_000L, 2020, 1.5, FuelType.HYBRID, 55000, Gearbox.AUTOMATIC, Color.RED, BodyType.COUPE, List.of(Feature.HEATED_SEATS, Feature.HEATED_WINDSCREEN, Feature.AIR_CON), null));
             carRepository.save(new Car(maker2, chazor, 323_039_000L, 2018, 1.5, FuelType.HYBRID, 90000, Gearbox.AUTOMATIC, Color.BLACK, BodyType.COUPE, List.of(Feature.PARKING_CAMERA, Feature.PRIVACY_GLASS, Feature.CD_PLAYER), null));
             carRepository.save(new Car(maker2, chazor, 341_660_000L, 2022, 1.5, FuelType.HYBRID, 10000, Gearbox.AUTOMATIC, Color.WHITE, BodyType.COUPE, List.of(Feature.PARKING_SENSORS, Feature.PREMIUM_SOUND_SYSTEM, Feature.HEAD_UP_DISPLAY), null));
+            carRepository.save(new Car(maker2, song, 448_500_000L, 2022, 2.0, FuelType.ELECTRIC, 15000, Gearbox.AUTOMATIC, Color.RED, BodyType.SUV, List.of(Feature.PARKING_SENSORS, Feature.HEATED_SEATS), null));
+            carRepository.save(new Car(maker2, song, 435_528_260L, 2023, 2.0, FuelType.ELECTRIC, 150000, Gearbox.MANUAL, Color.WHITE, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
+            carRepository.save(new Car(maker2, song, 415_528_260L, 2022, 2.0, FuelType.ELECTRIC, 260000, Gearbox.MANUAL, Color.BLUE, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
+            carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 340000, Gearbox.MANUAL, Color.ORANGE, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
+            carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 140000, Gearbox.AUTOMATIC, Color.BLACK, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
+            carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 450000, Gearbox.AUTOMATIC, Color.SILVER, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
         }
     }
 }
