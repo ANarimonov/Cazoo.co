@@ -4,9 +4,7 @@ import com.anarimonov.cazoo.dto.CarDto;
 import com.anarimonov.cazoo.dto.CarSearchDto;
 import com.anarimonov.cazoo.service.CarService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,15 +14,8 @@ public class CarController {
     private final CarService carService;
 
     @GetMapping
-    private HttpEntity<?> getCars(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size) {
-        try {
-            PageRequest pageRequest = PageRequest.of(page - 1, size);
-            return carService.getCars(pageRequest);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    private HttpEntity<?> getCars() {
+            return carService.getCars();
     }
 
     @GetMapping("/filter")
@@ -35,6 +26,11 @@ public class CarController {
     @GetMapping("/filter/count")
     private HttpEntity<?> getCarsCountByFilter(CarSearchDto carSearchDto) {
         return carService.getCars(carSearchDto, true);
+    }
+
+    @GetMapping("/{id}")
+    private HttpEntity<?> getCarById(@PathVariable String id) {
+        return carService.getCarById(Long.parseLong(id));
     }
 
     @PostMapping

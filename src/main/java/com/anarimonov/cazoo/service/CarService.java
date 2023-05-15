@@ -4,18 +4,17 @@ import com.anarimonov.cazoo.dto.CarDto;
 import com.anarimonov.cazoo.dto.CarSearchDto;
 import com.anarimonov.cazoo.entity.Car;
 import com.anarimonov.cazoo.entity.enums.*;
-import com.anarimonov.cazoo.repository.*;
+import com.anarimonov.cazoo.projection.CarProjection;
+import com.anarimonov.cazoo.repository.AttachmentRepository;
+import com.anarimonov.cazoo.repository.CarRepository;
+import com.anarimonov.cazoo.repository.MakerRepository;
+import com.anarimonov.cazoo.repository.ModelRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
-import nonapi.io.github.classgraph.concurrency.SingletonMap.NewInstanceFactory;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +32,13 @@ public class CarService {
     private final EntityManager entityManager;
     private final ModelRepository modelRepository;
 
-    public HttpEntity<?> getCars(PageRequest pageRequest) {
-        Page<Car> cars = carRepository.findAll(pageRequest);
+    public HttpEntity<?> getCars() {
+        List<CarProjection> cars = carRepository.getAll();
         return ResponseEntity.ok(cars);
+    }
+
+    public HttpEntity<?> getCarById(long id) {
+        return ResponseEntity.ok(carRepository.getById(id));
     }
 
     public HttpEntity<?> addCar(CarDto carDto) {
@@ -87,7 +90,7 @@ public class CarService {
         List<String> gearbox = carSearchDto.getGearbox();
         List<String> bodyType = carSearchDto.getBodyType();
         List<String> color = carSearchDto.getColor();
-        List<String> features = carSearchDto.getFeatures();
+//        List<String> features = carSearchDto.getFeatures();
         List<String> fuelType = carSearchDto.getFuelType();
         if (makerId != null)
             searchCriteria.add(builder.equal(root.get("maker"), makerRepository.findById(makerId).get()));
@@ -119,14 +122,17 @@ public class CarService {
             searchCriteria.add(root.get("bodyType").in(bodyType.stream().map(BodyType::valueOf).toList()));
         if (color != null && !color.isEmpty())
             searchCriteria.add(root.get("color").in(color.stream().map(Color::valueOf).toList()));
-        if (features != null && !features.isEmpty())
-            searchCriteria.add(root.get("features").in(features.stream().map(Feature::valueOf).toList()));
+
+//        if (features != null && !features.isEmpty())
+//            searchCriteria.add(root.get("features").in(features.stream().map(Feature::valueOf).toList()));
+
         if (fuelType != null && !fuelType.isEmpty())
             searchCriteria.add(root.get("fuelType").in(fuelType.stream().map(FuelType::valueOf).toList()));
 
         Predicate[] array = searchCriteria.toArray(new Predicate[searchCriteria.size()]);
         criteriaQuery.select(root).where(builder.and(array));
         List<Car> result = entityManager.createQuery(criteriaQuery).getResultList();
+
         return ResponseEntity.ok(count ? result.size() : result);
     }
 }

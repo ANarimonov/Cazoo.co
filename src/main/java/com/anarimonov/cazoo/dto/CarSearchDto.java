@@ -27,5 +27,5 @@ public class CarSearchDto {
     Integer maxManufacturedYear;
     List<String> color;
     List<String> bodyType;
-    List<String> features;
+//    List<String> features;
 }
