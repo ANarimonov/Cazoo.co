@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface CarRepository extends JpaRepository<Car, Long> {
-    @Query(nativeQuery = true, value = "select id, body_type as bodyType, color, engine, features, fuel_type as fuelType, gearbox, manufactured_year as manufacturedYear, mileage, price, registration_date as registrationDate, maker_id as makerId, model_id as modelId from cars")
+    @Query(nativeQuery = true, value = "select c.id, body_type as bodyType, color, engine, features, fuel_type as fuelType, gearbox, manufactured_year as manufacturedYear, mileage, price, registration_date as registrationDate, maker_id as makerId, model_id as modelId from cars c")
     List<CarProjection> getAll();
 
-    @Query(nativeQuery = true, value = "select id, body_type as bodyType, color, engine, features, fuel_type as fuelType, gearbox, manufactured_year as manufacturedYear, mileage, price, registration_date as registrationDate, maker_id as makerId, model_id as modelId from cars where id = :id")
+    @Query(nativeQuery = true, value = "select c.id, body_type as bodyType, color, engine, features, fuel_type as fuelType, gearbox, manufactured_year as manufacturedYear, mileage, price, registration_date as registrationDate, maker_id as makerId, model_id as modelId from cars c where c.id = :id")
     CarProjection getById(long id);
 
 }

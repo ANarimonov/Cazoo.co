@@ -50,7 +50,7 @@ public class DataLoader implements CommandLineRunner {
             carRepository.save(new Car(maker2, song, 448_500_000L, 2022, 2.0, FuelType.ELECTRIC, 15000, Gearbox.AUTOMATIC, Color.RED, BodyType.SUV, List.of(Feature.PARKING_SENSORS, Feature.HEATED_SEATS), null));
             carRepository.save(new Car(maker2, song, 435_528_260L, 2023, 2.0, FuelType.ELECTRIC, 150000, Gearbox.MANUAL, Color.WHITE, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
             carRepository.save(new Car(maker2, song, 415_528_260L, 2022, 2.0, FuelType.ELECTRIC, 260000, Gearbox.MANUAL, Color.BLUE, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
-            carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 340000, Gearbox.MANUAL, Color.ORANGE, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
+            carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 340000, Gearbox.MANUAL, Color.RED, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
             carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 140000, Gearbox.AUTOMATIC, Color.BLACK, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
             carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 450000, Gearbox.AUTOMATIC, Color.SILVER, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
         }

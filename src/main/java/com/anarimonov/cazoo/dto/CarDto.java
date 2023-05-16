@@ -1,5 +1,7 @@
 package com.anarimonov.cazoo.dto;
 
+import com.anarimonov.cazoo.entity.Maker;
+import com.anarimonov.cazoo.entity.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,4 +25,6 @@ public class CarDto {
     private String bodyType;
     private List<String> features;
     private List<Long> photosIds;
+    private Maker maker;
+    private Model model;
 }

@@ -139,7 +139,8 @@ public class CarService {
         criteriaQuery.select(root).where(builder.and(array));
         Stream<CarDto> stream = entityManager.createQuery(criteriaQuery).getResultList().stream().map(car -> {
             CarDto carDto = new CarDto();
-            carDto.setId(car.getId());
+            Long carId = car.getId();
+            carDto.setId(carId);
             carDto.setColor(car.getColor().toString());
             carDto.setEngine(car.getEngine());
             carDto.setFeatures(car.getFeatures().stream().map(Feature::name).toList());
@@ -148,8 +149,8 @@ public class CarService {
             carDto.setPrice(car.getPrice());
             carDto.setBodyType(car.getBodyType().toString());
             carDto.setFuelType(car.getFuelType().toString());
-            carDto.setMakerId(car.getMaker().getId());
-            carDto.setModelId(car.getModel().getId());
+            carDto.setMaker(makerRepository.getByCarId(carId));
+            carDto.setModel(modelRepository.getByCarId(carId));
             carDto.setManufacturedYear(car.getManufacturedYear());
             carDto.setPhotosIds(car.getAttachments().stream().map(Attachment::getId).toList());
             return carDto;

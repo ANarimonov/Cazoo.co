@@ -1,6 +1,8 @@
 package com.anarimonov.cazoo.projection;
 
 import com.anarimonov.cazoo.entity.Car;
+import com.anarimonov.cazoo.entity.Maker;
+import com.anarimonov.cazoo.entity.Model;
 import com.anarimonov.cazoo.entity.enums.BodyType;
 import com.anarimonov.cazoo.entity.enums.Color;
 import com.anarimonov.cazoo.entity.enums.FuelType;
