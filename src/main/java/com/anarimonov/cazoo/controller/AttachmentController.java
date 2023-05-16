@@ -3,9 +3,8 @@ package com.anarimonov.cazoo.controller;
 import com.anarimonov.cazoo.entity.Attachment;
 import com.anarimonov.cazoo.repository.AttachmentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +17,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AttachmentController {
     private final AttachmentRepository attachmentRepository;
+
+    @GetMapping("/{attachmentId}")
+    private ResponseEntity<?> getFile(@PathVariable String attachmentId) {
+        Attachment attachment = attachmentRepository.findById(Long.parseLong(attachmentId)).orElseThrow();
+        try {
+            ByteArrayResource resource = new ByteArrayResource(attachment.getData());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=" + attachment.getName())
+                    .contentType(MediaType.valueOf(attachment.getContentType()))
+                    .contentLength(attachment.getData().length)
+                    .body(resource);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 
     @PostMapping
     private HttpEntity<?> uploadFiles(@RequestPart(value = "file") List<MultipartFile> files) {
