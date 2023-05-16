@@ -2,6 +2,7 @@ package com.anarimonov.cazoo.service;
 
 import com.anarimonov.cazoo.dto.CarDto;
 import com.anarimonov.cazoo.dto.CarSearchDto;
+import com.anarimonov.cazoo.entity.Attachment;
 import com.anarimonov.cazoo.entity.Car;
 import com.anarimonov.cazoo.entity.enums.*;
 import com.anarimonov.cazoo.projection.CarProjection;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -73,9 +75,13 @@ public class CarService {
     }
 
     public HttpEntity<?> getCars(CarSearchDto carSearchDto, boolean count) {
+
+
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Car> criteriaQuery = builder.createQuery(Car.class);
         Root<Car> root = criteriaQuery.from(Car.class);
+
+
         List<Predicate> searchCriteria = new ArrayList<>();
         Long makerId = carSearchDto.getMakerId();
         Long modelId = carSearchDto.getModelId();
@@ -131,8 +137,23 @@ public class CarService {
 
         Predicate[] array = searchCriteria.toArray(new Predicate[searchCriteria.size()]);
         criteriaQuery.select(root).where(builder.and(array));
-        List<Car> result = entityManager.createQuery(criteriaQuery).getResultList();
-
-        return ResponseEntity.ok(count ? result.size() : result);
+        Stream<CarDto> stream = entityManager.createQuery(criteriaQuery).getResultList().stream().map(car -> {
+            CarDto carDto = new CarDto();
+            carDto.setId(car.getId());
+            carDto.setColor(car.getColor().toString());
+            carDto.setEngine(car.getEngine());
+            carDto.setFeatures(car.getFeatures().stream().map(Feature::name).toList());
+            carDto.setGearbox(car.getGearbox().toString());
+            carDto.setMileage(car.getMileage());
+            carDto.setPrice(car.getPrice());
+            carDto.setBodyType(car.getBodyType().toString());
+            carDto.setFuelType(car.getFuelType().toString());
+            carDto.setMakerId(car.getMaker().getId());
+            carDto.setModelId(car.getModel().getId());
+            carDto.setManufacturedYear(car.getManufacturedYear());
+            carDto.setPhotosIds(car.getAttachments().stream().map(Attachment::getId).toList());
+            return carDto;
+        });
+        return ResponseEntity.ok(count ? stream.count() : stream.toList());
     }
 }

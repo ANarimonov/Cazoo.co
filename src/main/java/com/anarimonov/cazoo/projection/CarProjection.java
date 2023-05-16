@@ -27,5 +27,5 @@ public interface CarProjection {
     Timestamp getRegistrationDate();
     String getFeatures();
     @Value("#{@attachmentRepository.getByCarId(target.id)}")
-    List<Long> getAttachmentsIds();
+    List<Long> getPhotosIds();
 }

@@ -3,8 +3,9 @@ package com.anarimonov.cazoo.entity;
 import com.anarimonov.cazoo.entity.enums.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -12,9 +13,10 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Setter
+@Getter
 @Entity(name = "cars")
-public class Car {
+public class Car{
     @Id
     @GeneratedValue
     private Long id;
@@ -55,4 +57,5 @@ public class Car {
         this.features = features;
         this.attachments = attachments;
     }
+
 }
