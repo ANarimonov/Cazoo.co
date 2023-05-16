@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface MakerRepository extends JpaRepository<Maker, Long> {
-    @Query(nativeQuery = true, value = "select * from makers join cars c on makers.id = c.maker_id where c.id = :carId")
+    @Query(nativeQuery = true, value = "select makers.* from makers join cars c on makers.id = c.maker_id where c.id = :carId")
     Maker getByCarId(long carId);
 }
