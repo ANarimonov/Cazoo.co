@@ -1,5 +1,6 @@
 package com.anarimonov.cazoo.payload;
 
+import com.anarimonov.cazoo.bot.Bot;
 import com.anarimonov.cazoo.entity.Car;
 import com.anarimonov.cazoo.entity.Maker;
 import com.anarimonov.cazoo.entity.Model;
@@ -11,11 +12,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +32,10 @@ public class DataLoader implements CommandLineRunner {
     private final CarRepository carRepository;
     @Value("${spring.jpa.hibernate.ddl-auto}")
     String ddlAuto;
+    @Value("${botUsername}")
+    String botUsername;
+    @Value("${botToken}")
+    String botToken;
 
     @Override
     public void run(String... args) {
@@ -58,25 +67,39 @@ public class DataLoader implements CommandLineRunner {
             carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 140000, Gearbox.AUTOMATIC, Color.BLACK, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
             carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 450000, Gearbox.AUTOMATIC, Color.SILVER, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
         }
-        databaseBackup();
+        Bot bot = new Bot(botUsername,botToken);
+        try {
+            new TelegramBotsApi(DefaultBotSession.class).registerBot(bot);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+        while (true) {
+            Thread thread = new Thread(() -> {
+                String s = LocalDate.now().toString().substring(8);
+                if (s.equals("28")) {
+                    databaseBackup(bot);
+                }
+            });
+            thread.start();
+            try {
+                Thread.sleep(86_400_000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
-    private void databaseBackup() {
 
-        String dBName = "cazoo_db";
-        String dBUser = "postgres";
-        String dBPass = "root123";
-        String filePath = "backup.sql";
-
+    private void databaseBackup(Bot bot) {
+        Long programmerTGId = 905951214L;
         try {
             List<String> command = Arrays.asList(
                     "/usr/lib/postgresql/14/bin/pg_dump",
-                    "-U", dBUser,
-                    "-d", dBName,
-                    "-f", filePath
+                    "-U", "postgres",
+                    "-d", "cazoo_db",
+                    "-f", "backup.sql"
             );
-
             ProcessBuilder processBuilder = new ProcessBuilder(command);
-            processBuilder.environment().put("PGPASSWORD", dBPass);
+            processBuilder.environment().put("PGPASSWORD", "root1234");
 
             Process process = processBuilder.start();
 
@@ -95,11 +118,11 @@ public class DataLoader implements CommandLineRunner {
 
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                FileOutputStream fos = new FileOutputStream(filePath);
+                FileOutputStream fos = new FileOutputStream("backup.sql");
                 fos.write(stringBuilder.toString().getBytes());
                 fos.flush();
                 fos.close();
-                System.out.println("Backup saved successfully to " + filePath);
+                bot.sendDocument(programmerTGId, "backup.sql");
             } else {
                 System.out.println("Backup failed. Exit code: " + exitCode);
             }
