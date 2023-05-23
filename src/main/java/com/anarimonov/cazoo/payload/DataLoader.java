@@ -7,12 +7,16 @@ import com.anarimonov.cazoo.entity.enums.*;
 import com.anarimonov.cazoo.repository.CarRepository;
 import com.anarimonov.cazoo.repository.MakerRepository;
 import com.anarimonov.cazoo.repository.ModelRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -54,5 +58,54 @@ public class DataLoader implements CommandLineRunner {
             carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 140000, Gearbox.AUTOMATIC, Color.BLACK, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
             carRepository.save(new Car(maker2, tang, 415_528_260L, 2022, 2.5, FuelType.ELECTRIC, 450000, Gearbox.AUTOMATIC, Color.SILVER, BodyType.SUV, List.of(Feature.AIR_CON, Feature.ACTIVE_CRUISE_CONTROL, Feature.METALLIC_PAINT), null));
         }
+        databaseBackup();
     }
+    private void databaseBackup() {
+
+        String dBName = "cazoo_db";
+        String dBUser = "postgres";
+        String dBPass = "root123";
+        String filePath = "backup.sql";
+
+        try {
+            List<String> command = Arrays.asList(
+                    "/usr/lib/postgresql/14/bin/pg_dump",
+                    "-U", dBUser,
+                    "-d", dBName,
+                    "-f", filePath
+            );
+
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.environment().put("PGPASSWORD", dBPass);
+
+            Process process = processBuilder.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line).append("\n");
+            }
+
+            BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String line1;
+            while ((line1 = error.readLine()) != null) {
+                System.out.println(line1);
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                FileOutputStream fos = new FileOutputStream(filePath);
+                fos.write(stringBuilder.toString().getBytes());
+                fos.flush();
+                fos.close();
+                System.out.println("Backup saved successfully to " + filePath);
+            } else {
+                System.out.println("Backup failed. Exit code: " + exitCode);
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

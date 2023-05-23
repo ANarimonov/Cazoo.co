@@ -16,7 +16,9 @@ public class User {
     private Long id;
     private String phoneNumber;
     private String password;
+    @Enumerated(EnumType.STRING)
     private Role role;
     @OneToOne(cascade = CascadeType.ALL)
     private UserInfo userInfo;
+
 }
