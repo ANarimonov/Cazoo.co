@@ -99,7 +99,7 @@ public class DataLoader implements CommandLineRunner {
                     "-f", "backup.sql"
             );
             ProcessBuilder processBuilder = new ProcessBuilder(command);
-            processBuilder.environment().put("PGPASSWORD", "root123");
+            processBuilder.environment().put("PGPASSWORD", ""/* There should be a database password*/);
 
             Process process = processBuilder.start();
 
