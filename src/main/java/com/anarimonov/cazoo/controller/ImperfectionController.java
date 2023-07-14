@@ -9,32 +9,42 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("/api/car/imperfections")
 @RequiredArgsConstructor
 public class ImperfectionController {
     private final ImperfectionService imperfectionService;
     private final ImperfectionRepository imperfectionRepository;
+
     @GetMapping("/by-car/{carId}")
-    private HttpEntity<?> getImperfectionsByCarId(@PathVariable String carId) {
-        Imperfection imperfection = imperfectionRepository.findByCarId(Long.parseLong(carId));
-        return ResponseEntity.ok(imperfection);
+    public HttpEntity<?> getImperfectionsByCarId(@PathVariable long carId) {
+        List<Imperfection> imperfections = imperfectionRepository.findByCarId(carId);
+        return ResponseEntity.ok(imperfections);
     }
 
-    @GetMapping("/{imperfectionId}")
-    private HttpEntity<?> getImperfectionById(@PathVariable String imperfectionId) {
-        Imperfection imperfection = imperfectionRepository.findById(Long.parseLong(imperfectionId)).orElseThrow(() -> new RuntimeException("Imperfection not found"));
+    @GetMapping("/{id}")
+    public HttpEntity<?> getImperfectionById(@PathVariable long id) {
+        Imperfection imperfection = imperfectionRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Imperfection not found"));
         return ResponseEntity.ok(imperfection);
     }
 
     @PostMapping("/add")
-    private HttpEntity<?> addImperfection(@RequestBody ImperfectionDto imperfectionDto) {
+    public HttpEntity<?> addImperfection(@RequestBody ImperfectionDto imperfectionDto) {
         return imperfectionService.addImperfection(imperfectionDto);
     }
 
+    @PutMapping("/{id}")
+    public HttpEntity<?> editImperfection(@PathVariable long id, @RequestBody ImperfectionDto imperfectionDto) {
+        return imperfectionService.editImperfection(id,imperfectionDto);
+    }
+
     @DeleteMapping("/{id}")
-    private HttpEntity<?> delete(@PathVariable String id) {
-        imperfectionRepository.deleteById(Long.parseLong(id));
-        return ResponseEntity.ok("successfully deleted");
+    public HttpEntity<?> delete(@PathVariable long id) {
+        if (!imperfectionRepository.existsById(id)) return ResponseEntity.status(404).body("Imperfection not found");
+        imperfectionRepository.deleteById(id);
+        return ResponseEntity.ok("Successfully deleted");
     }
 }

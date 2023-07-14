@@ -4,7 +4,9 @@ import com.anarimonov.cazoo.entity.Imperfection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 public interface ImperfectionRepository extends JpaRepository<Imperfection, Long> {
-    Imperfection findByCarId(Long car_id);
+    List<Imperfection> findByCarId(Long car_id);
 }

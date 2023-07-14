@@ -14,9 +14,16 @@ import lombok.NoArgsConstructor;
 public class UserInfo {
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
     private String fullName;
     private String birthday;
     private String region;
     private String city;
+
+    public UserInfo(String fullName, String birthday, String region, String city) {
+        this.fullName = fullName;
+        this.birthday = birthday;
+        this.region = region;
+        this.city = city;
+    }
 }

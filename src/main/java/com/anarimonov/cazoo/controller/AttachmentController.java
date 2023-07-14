@@ -1,6 +1,8 @@
 package com.anarimonov.cazoo.controller;
 
 import com.anarimonov.cazoo.entity.Attachment;
+import com.anarimonov.cazoo.entity.AttachmentContent;
+import com.anarimonov.cazoo.repository.AttachmentContentRepository;
 import com.anarimonov.cazoo.repository.AttachmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -11,22 +13,28 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/files")
 @RequiredArgsConstructor
 public class AttachmentController {
     private final AttachmentRepository attachmentRepository;
+    private final AttachmentContentRepository attachmentContentRepository;
 
     @GetMapping("/{attachmentId}")
-    private ResponseEntity<?> getFile(@PathVariable String attachmentId) {
-        Attachment attachment = attachmentRepository.findById(Long.parseLong(attachmentId)).orElseThrow();
+    public ResponseEntity<?> getFile(@PathVariable long attachmentId) {
+        Optional<Attachment> optionalAttachment = attachmentRepository.findById(attachmentId);
+        if (optionalAttachment.isEmpty())
+            return ResponseEntity.status(404).body("Attachment not found");
+        Attachment attachment = optionalAttachment.get();
+        AttachmentContent content = attachmentContentRepository.findByAttachmentId(attachment.getId());
         try {
-            ByteArrayResource resource = new ByteArrayResource(attachment.getData());
+            ByteArrayResource resource = new ByteArrayResource(content.getData());
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=" + attachment.getName())
                     .contentType(MediaType.valueOf(attachment.getContentType()))
-                    .contentLength(attachment.getData().length)
+                    .contentLength(content.getData().length)
                     .body(resource);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -34,43 +42,47 @@ public class AttachmentController {
     }
 
     @PostMapping
-    private HttpEntity<?> uploadFiles(@RequestPart(value = "file") List<MultipartFile> files) {
+    public HttpEntity<?> uploadFiles(@RequestPart(value = "file") List<MultipartFile> files) {
         try {
             List<Long> ids = new ArrayList<>();
             for (MultipartFile file : files) {
                 Attachment attachment = attachmentRepository.save(new Attachment(
                         file.getOriginalFilename(),
                         file.getSize(),
-                        file.getContentType(),
-                        file.getBytes()
+                        file.getContentType()
+                ));
+                attachmentContentRepository.save(new AttachmentContent(
+                        file.getBytes(),
+                        attachment
                 ));
                 ids.add(attachment.getId());
             }
-            return ResponseEntity.ok(ids);
+            return ResponseEntity.status(201).body(ids);
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PostMapping("/{id}")
-    private HttpEntity<?> uploadFile(@RequestPart(value = "file") MultipartFile file, @PathVariable String id) {
-        try {
-            attachmentRepository.save(new Attachment(
-                    Long.parseLong(id),
-                    file.getOriginalFilename(),
-                    file.getSize(),
-                    file.getContentType(),
-                    file.getBytes()
-            ));
-            return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    @PutMapping("/{id}")
+    public HttpEntity<?> updateFile(@PathVariable long id, @RequestPart(value = "file") MultipartFile file) throws IOException {
+        Optional<Attachment> optionalAttachment = attachmentRepository.findById(id);
+        if (optionalAttachment.isEmpty()) {
+            return ResponseEntity.status(404).body("Attachment not found");
         }
+        Attachment attachment = optionalAttachment.get();
+        AttachmentContent content = attachmentContentRepository.findByAttachmentId(attachment.getId());
+        attachment.setName(file.getName());
+        attachment.setSize(file.getSize());
+        attachment.setContentType(file.getContentType());
+        content.setData(file.getBytes());
+        attachmentRepository.save(attachment);
+        attachmentContentRepository.save(content);
+        return ResponseEntity.ok().body("successfully update");
     }
 
     @DeleteMapping("/{id}")
-    private HttpEntity<?> deleteFile(@PathVariable String id) {
-        attachmentRepository.deleteById(Long.parseLong(id));
+    public HttpEntity<?> deleteFile(@PathVariable long id) {
+        attachmentRepository.deleteById(id);
         return ResponseEntity.ok("successfully deleted");
     }
 }

@@ -8,18 +8,16 @@ import lombok.*;
 @Data
 @Entity(name = "attachments")
 public class Attachment {
-    public Attachment(String name, Long size, String contentType, byte[] data) {
+    public Attachment(String name, Long size, String contentType) {
         this.name = name;
         this.size = size;
         this.contentType = contentType;
-        this.data = data;
     }
 
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
     private String name;
-    private Long size;
+    private long size;
     private String contentType;
-    private byte[] data;
 }

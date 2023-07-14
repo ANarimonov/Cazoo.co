@@ -2,20 +2,16 @@ package com.anarimonov.cazoo.service;
 
 import com.anarimonov.cazoo.dto.CarDto;
 import com.anarimonov.cazoo.dto.CarSearchDto;
-import com.anarimonov.cazoo.entity.Attachment;
 import com.anarimonov.cazoo.entity.Car;
 import com.anarimonov.cazoo.entity.enums.*;
-import com.anarimonov.cazoo.projection.CarProjection;
 import com.anarimonov.cazoo.repository.AttachmentRepository;
 import com.anarimonov.cazoo.repository.CarRepository;
 import com.anarimonov.cazoo.repository.MakerRepository;
 import com.anarimonov.cazoo.repository.ModelRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,33 +31,42 @@ public class CarService {
     private final ModelRepository modelRepository;
 
     public HttpEntity<?> getCars() {
-        List<CarProjection> cars = carRepository.getAll();
+        List<Car> cars = carRepository.findAll();
         return ResponseEntity.ok(cars);
     }
 
     public HttpEntity<?> getCarById(long id) {
-        return ResponseEntity.ok(carRepository.getById(id));
+        return ResponseEntity.ok(carRepository.findById(id));
+    }
+
+    public HttpEntity<?> getCarsByFilter(CarSearchDto carSearchDto, boolean count) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Car> criteriaQuery = builder.createQuery(Car.class);
+        Root<Car> root = criteriaQuery.from(Car.class);
+        List<Predicate> searchCriteria = new ArrayList<>();
+
+        addEqualCriteria(builder, searchCriteria, root.get("maker"), carSearchDto.getMakerId(), makerRepository);
+        addEqualCriteria(builder, searchCriteria, root.get("model"), carSearchDto.getModelId(), modelRepository);
+
+        addRangeCriteria(builder, searchCriteria, root.get("price"), carSearchDto.getMinPrice(), carSearchDto.getMaxPrice());
+        addRangeCriteria(builder, searchCriteria, root.get("engine"), carSearchDto.getMinEngine(), carSearchDto.getMaxEngine());
+        addRangeCriteria(builder, searchCriteria, root.get("mileage"), carSearchDto.getMinMileage(), carSearchDto.getMaxMileage());
+        addRangeCriteria(builder, searchCriteria, root.get("manufacturedYear"), carSearchDto.getMinManufacturedYear(), carSearchDto.getMaxManufacturedYear());
+
+        addInCriteria(searchCriteria, root.get("gearbox"), carSearchDto.getGearbox());
+        addInCriteria(searchCriteria, root.get("bodyType"), carSearchDto.getBodyType());
+        addInCriteria(searchCriteria, root.get("color"), carSearchDto.getColor());
+        addInCriteria(searchCriteria, root.get("fuelType"), carSearchDto.getFuelType());
+
+        Predicate[] array = searchCriteria.toArray(new Predicate[0]);
+        criteriaQuery.select(root).where(builder.and(array));
+        List<Car> cars = entityManager.createQuery(criteriaQuery).getResultList();
+        return ResponseEntity.ok(count ? cars.size() : cars);
     }
 
     public HttpEntity<?> addCar(CarDto carDto) {
-        Car car = new Car();
         try {
-            car.setId(carDto.getId());
-            car.setColor(Color.valueOf(carDto.getColor()));
-            car.setEngine(carDto.getEngine());
-            List<Feature> features = new ArrayList<>();
-            for (String feature : carDto.getFeatures())
-                features.add(Feature.valueOf(feature));
-            car.setFeatures(features);
-            car.setGearbox(Gearbox.valueOf(carDto.getGearbox()));
-            car.setBodyType(BodyType.valueOf(carDto.getBodyType()));
-            car.setFuelType(FuelType.valueOf(carDto.getFuelType()));
-            car.setManufacturedYear(carDto.getManufacturedYear());
-            car.setMaker(makerRepository.findById(carDto.getMakerId()).orElse(null));
-            car.setMileage(carDto.getMileage());
-            car.setModel(modelRepository.findById(carDto.getModelId()).orElse(null));
-            car.setPrice(carDto.getPrice());
-            car.setAttachments(attachmentRepository.findAllById(carDto.getPhotosIds()));
+            Car car = carSetter(null, carDto);
             carRepository.save(car);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -69,92 +74,61 @@ public class CarService {
         return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
     }
 
-    public HttpEntity<?> deleteCar(String id) {
-        carRepository.deleteById(Long.parseLong(id));
+    public HttpEntity<?> editCar(long id, CarDto carDto) {
+        try {
+            Car car = carSetter(id, carDto);
+            carRepository.save(car);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("success");
+    }
+
+    public HttpEntity<?> deleteCar(long id) {
+        carRepository.deleteById(id);
         return ResponseEntity.ok("success");
     }
 
-    public HttpEntity<?> getCars(CarSearchDto carSearchDto, boolean count) {
+    private Car carSetter(Long id, CarDto carDto) {
+        Car car = id == null ? new Car() : carRepository.findById(id).orElseThrow();
+        List<Feature> features = carDto.getFeatures().stream()
+                .map(Feature::valueOf)
+                .collect(Collectors.toList());
+        car.setColor(carDto.getColor() != null ? Color.valueOf(carDto.getColor()) : car.getColor());
+        car.setEngine(carDto.getEngine() != null ? carDto.getEngine() : car.getEngine());
+        car.setFeatures(features.isEmpty() ? car.getFeatures() : features);
+        car.setGearbox(carDto.getGearbox() != null ? Gearbox.valueOf(carDto.getGearbox()) : car.getGearbox());
+        car.setBodyType(carDto.getBodyType() != null ? BodyType.valueOf(carDto.getBodyType()) : car.getBodyType());
+        car.setFuelType(carDto.getFuelType() != null ? FuelType.valueOf(carDto.getFuelType()) : car.getFuelType());
+        car.setManufacturedYear(carDto.getManufacturedYear() != null ? carDto.getManufacturedYear() : car.getManufacturedYear());
+        car.setMaker(makerRepository.findById(carDto.getMakerId()).orElse(car.getMaker()));
+        car.setMileage(carDto.getMileage() != null ? carDto.getMileage() : car.getMileage());
+        car.setModel(modelRepository.findById(carDto.getModelId()).orElse(car.getModel()));
+        car.setPrice(carDto.getPrice() != null ? carDto.getPrice() : car.getPrice());
+        car.setAttachments(carDto.getPhotosIds() != null ? attachmentRepository.findAllById(carDto.getPhotosIds()) : car.getAttachments());
+        return car;
+    }
 
 
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Car> criteriaQuery = builder.createQuery(Car.class);
-        Root<Car> root = criteriaQuery.from(Car.class);
+    private void addEqualCriteria(CriteriaBuilder builder, List<Predicate> searchCriteria, Path<Object> path, Long value, JpaRepository<?, Long> repository) {
+        if (value != null) {
+            Object entity = repository.findById(value).orElseThrow();
+            searchCriteria.add(builder.equal(path, entity));
+        }
+    }
 
+    private <T extends Comparable<? super T>> void addRangeCriteria(CriteriaBuilder builder, List<Predicate> searchCriteria, Path<T> path, T minValue, T maxValue) {
+        if (minValue != null) {
+            searchCriteria.add(builder.greaterThanOrEqualTo(path, minValue));
+        }
+        if (maxValue != null) {
+            searchCriteria.add(builder.lessThanOrEqualTo(path, maxValue));
+        }
+    }
 
-        List<Predicate> searchCriteria = new ArrayList<>();
-        Long makerId = carSearchDto.getMakerId();
-        Long modelId = carSearchDto.getModelId();
-        Long maxPrice = carSearchDto.getMaxPrice();
-        Long minPrice = carSearchDto.getMinPrice();
-        Double minEngine = carSearchDto.getMinEngine();
-        Double maxEngine = carSearchDto.getMaxEngine();
-        Integer minMileage = carSearchDto.getMinMileage();
-        Integer maxMileage = carSearchDto.getMaxMileage();
-        Integer minManufacturedYear = carSearchDto.getMinManufacturedYear();
-        Integer maxManufacturedYear = carSearchDto.getMaxManufacturedYear();
-        List<String> gearbox = carSearchDto.getGearbox();
-        List<String> bodyType = carSearchDto.getBodyType();
-        List<String> color = carSearchDto.getColor();
-//        List<String> features = carSearchDto.getFeatures();
-        List<String> fuelType = carSearchDto.getFuelType();
-        if (makerId != null)
-            searchCriteria.add(builder.equal(root.get("maker"), makerRepository.findById(makerId).get()));
-        if (modelId != null)
-            searchCriteria.add(builder.equal(root.get("model"), modelRepository.findById(modelId).get()));
-        if (minPrice != null)
-            searchCriteria
-                    .add(builder.between(root.get("price"), minPrice, maxPrice == null ? Long.MAX_VALUE : maxPrice));
-        if (minPrice == null && maxPrice != null)
-            searchCriteria.add(builder.between(root.get("price"), 0L, maxPrice));
-        if (minEngine != null)
-            searchCriteria.add(
-                    builder.between(root.get("engine"), minEngine, maxEngine == null ? Long.MAX_VALUE : maxEngine));
-        if (minEngine == null && maxEngine != null)
-            searchCriteria.add(builder.between(root.get("engine"), 0.0, maxEngine));
-        if (minMileage != null)
-            searchCriteria.add(builder.between(root.get("mileage"), minMileage,
-                    maxMileage == null ? Integer.MAX_VALUE : maxMileage));
-        if (minMileage == null && maxMileage != null)
-            searchCriteria.add(builder.between(root.get("mileage"), 0, maxMileage));
-        if (minManufacturedYear != null)
-            searchCriteria.add(builder.between(root.get("manufacturedYear"), minManufacturedYear,
-                    maxManufacturedYear == null ? Integer.MAX_VALUE : maxManufacturedYear));
-        if (minManufacturedYear == null && maxManufacturedYear != null)
-            searchCriteria.add(builder.between(root.get("manufacturedYear"), 0, maxManufacturedYear));
-        if (gearbox != null && !gearbox.isEmpty())
-            searchCriteria.add(root.get("gearbox").in(gearbox.stream().map(Gearbox::valueOf).toList()));
-        if (bodyType != null && !bodyType.isEmpty())
-            searchCriteria.add(root.get("bodyType").in(bodyType.stream().map(BodyType::valueOf).toList()));
-        if (color != null && !color.isEmpty())
-            searchCriteria.add(root.get("color").in(color.stream().map(Color::valueOf).toList()));
-
-//        if (features != null && !features.isEmpty())
-//            searchCriteria.add(root.get("features").in(features.stream().map(Feature::valueOf).toList()));
-
-        if (fuelType != null && !fuelType.isEmpty())
-            searchCriteria.add(root.get("fuelType").in(fuelType.stream().map(FuelType::valueOf).toList()));
-
-        Predicate[] array = searchCriteria.toArray(new Predicate[searchCriteria.size()]);
-        criteriaQuery.select(root).where(builder.and(array));
-        Stream<CarDto> stream = entityManager.createQuery(criteriaQuery).getResultList().stream().map(car -> {
-            CarDto carDto = new CarDto();
-            Long carId = car.getId();
-            carDto.setId(carId);
-            carDto.setColor(car.getColor().toString());
-            carDto.setEngine(car.getEngine());
-            carDto.setFeatures(car.getFeatures().stream().map(Feature::name).toList());
-            carDto.setGearbox(car.getGearbox().toString());
-            carDto.setMileage(car.getMileage());
-            carDto.setPrice(car.getPrice());
-            carDto.setBodyType(car.getBodyType().toString());
-            carDto.setFuelType(car.getFuelType().toString());
-            carDto.setMaker(makerRepository.getByCarId(carId));
-            carDto.setModel(modelRepository.getByCarId(carId));
-            carDto.setManufacturedYear(car.getManufacturedYear());
-            carDto.setPhotosIds(car.getAttachments().stream().map(Attachment::getId).toList());
-            return carDto;
-        });
-        return ResponseEntity.ok(count ? stream.count() : stream.toList());
+    private void addInCriteria(List<Predicate> searchCriteria, Path<Object> path, List<String> values) {
+        if (values != null && !values.isEmpty()) {
+            searchCriteria.add(path.in(values));
+        }
     }
 }

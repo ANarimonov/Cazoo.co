@@ -19,30 +19,28 @@ public class ModelController {
     private final MakerRepository makerRepository;
     private final ModelRepository modelRepository;
     @GetMapping("/{makerId}")
-    private HttpEntity<?> getModelByMaker(@PathVariable String makerId) {
-        List<Model> models = modelRepository.findByMakerId(Long.parseLong(makerId));
+    public HttpEntity<?> getModelByMaker(@PathVariable long makerId) {
+        List<Model> models = modelRepository.findByMakerId(makerId);
         return ResponseEntity.ok(models);
     }
 
     @PostMapping
-    private HttpEntity<?> addModel(@RequestBody ModelDto modelDto) {
+    public HttpEntity<?> addModel(@RequestBody ModelDto modelDto) {
         Model model = new Model();
         try {
-
-            model.setId(modelDto.getId());
             model.setName(modelDto.getName());
             model.setMaker(makerRepository.findById(modelDto.getMakerId()).orElseThrow());
             modelRepository.save(model);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
+        return ResponseEntity.status(HttpStatus.valueOf(201)).body("Successfully added");
     }
 
     @DeleteMapping("/{id}")
-    private HttpEntity<?> delete(@PathVariable String id) {
-        modelRepository.deleteById(Long.parseLong(id));
-        return ResponseEntity.ok("successfully deleted");
+    public HttpEntity<?> delete(@PathVariable long id) {
+        modelRepository.deleteById(id);
+        return ResponseEntity.ok("Successfully deleted");
     }
 
 }

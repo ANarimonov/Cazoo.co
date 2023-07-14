@@ -1,12 +1,9 @@
 package com.anarimonov.cazoo.dto;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class SpecificationDto {
-    private Long id;
     private Integer topSpeed;
     private Double acceleration;
     private Integer enginePower;

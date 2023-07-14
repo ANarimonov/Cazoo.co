@@ -7,7 +7,6 @@ import com.anarimonov.cazoo.repository.FavoriteRepository;
 import com.anarimonov.cazoo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +20,8 @@ public class FavoriteService {
     private final CarRepository carRepository;
 
 
-    public HttpEntity<?> getFavoritesByUser(String userId) {
-        List<Favorite> favorites = favoriteRepository.findByUserId(Long.parseLong(userId));
+    public HttpEntity<?> getFavoritesByUser(Long userId) {
+        List<Favorite> favorites = favoriteRepository.findByUserId(userId);
         return ResponseEntity.ok(favorites);
     }
 
@@ -35,15 +34,15 @@ public class FavoriteService {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
+        return ResponseEntity.status(201).body("Successfully added");
     }
 
-    public HttpEntity<?> deleteFavorite(String favoriteId) {
+    public HttpEntity<?> deleteFavorite(Long favoriteId) {
         try {
-            favoriteRepository.deleteById(Long.parseLong(favoriteId));
+            favoriteRepository.deleteById(favoriteId);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.ok("successfully deleted");
+        return ResponseEntity.ok("Successfully deleted");
     }
 }

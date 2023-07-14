@@ -1,16 +1,13 @@
 package com.anarimonov.cazoo.dto;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Getter
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CarSearchDto {
     Long makerId;
@@ -27,5 +24,4 @@ public class CarSearchDto {
     Integer maxManufacturedYear;
     List<String> color;
     List<String> bodyType;
-//    List<String> features;
 }

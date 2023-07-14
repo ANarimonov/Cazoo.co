@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Specification {
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
     private Integer topSpeed;
     private Double acceleration;
     private Integer enginePower;

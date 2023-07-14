@@ -53,7 +53,7 @@ public class SpringSecurity {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers(HttpMethod.POST,"/api/auth").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/auth/register", "/api/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.DELETE).hasRole("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.POST).hasRole("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.GET).permitAll()

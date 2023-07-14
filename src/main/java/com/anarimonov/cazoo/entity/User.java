@@ -2,18 +2,16 @@ package com.anarimonov.cazoo.entity;
 
 import com.anarimonov.cazoo.entity.enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity(name = "users")
 public class User {
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
     private String phoneNumber;
     private String password;
     @Enumerated(EnumType.STRING)
@@ -21,4 +19,10 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     private UserInfo userInfo;
 
+    public User(String phoneNumber, String password, Role role, UserInfo userInfo) {
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.role = role;
+        this.userInfo = userInfo;
+    }
 }

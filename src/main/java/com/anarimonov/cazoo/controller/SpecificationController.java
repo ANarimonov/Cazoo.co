@@ -17,19 +17,25 @@ public class SpecificationController {
     private final SpecificationRepository specificationRepository;
 
     @GetMapping("/{id}")
-    private HttpEntity<?> getSpecificationById(@PathVariable String id) {
-        Specification specification = specificationRepository.findById(Long.parseLong(id)).orElseThrow();
+    public HttpEntity<?> getSpecificationById(@PathVariable long id) {
+        Specification specification = specificationRepository.findById(id).orElseThrow();
         return ResponseEntity.ok(specification);
     }
 
     @PostMapping
-    private HttpEntity<?> addSpecification(@RequestBody SpecificationDto specificationDto) {
+    public HttpEntity<?> addSpecification(@RequestBody SpecificationDto specificationDto) {
         return specificationService.addSpecification(specificationDto);
     }
 
+    @PutMapping("/{id}")
+    public HttpEntity<?> editSpecification(@PathVariable long id, @RequestBody SpecificationDto specificationDto) {
+        return specificationService.editSpecification(specificationDto, id);
+    }
+
     @DeleteMapping("/{id}")
-    private HttpEntity<?> delete(@PathVariable String id) {
-        specificationRepository.deleteById(Long.parseLong(id));
-        return ResponseEntity.ok("successfully deleted");
+    public HttpEntity<?> delete(@PathVariable long id) {
+
+        specificationRepository.deleteById(id);
+        return ResponseEntity.ok("Successfully deleted");
     }
 }

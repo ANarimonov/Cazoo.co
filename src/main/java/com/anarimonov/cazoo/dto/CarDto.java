@@ -2,17 +2,12 @@ package com.anarimonov.cazoo.dto;
 
 import com.anarimonov.cazoo.entity.Maker;
 import com.anarimonov.cazoo.entity.Model;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Getter
 public class CarDto {
-    private Long id;
     private Long makerId;
     private Long modelId;
     private Long price;

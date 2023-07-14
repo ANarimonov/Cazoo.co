@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Imperfection {
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
     @OneToOne
     private Attachment attachment;
     @Column(columnDefinition = "text", nullable = false)

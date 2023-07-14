@@ -14,32 +14,37 @@ public class CarController {
     private final CarService carService;
 
     @GetMapping
-    private HttpEntity<?> getCars() {
-            return carService.getCars();
+    public HttpEntity<?> getCars() {
+        return carService.getCars();
     }
 
     @GetMapping("/filter")
-    private HttpEntity<?> getCarsByFilter(CarSearchDto carSearchDto) {
-        return carService.getCars(carSearchDto, false);
+    public HttpEntity<?> getCarsByFilter(CarSearchDto carSearchDto) {
+        return carService.getCarsByFilter(carSearchDto, false);
     }
 
     @GetMapping("/filter/count")
-    private HttpEntity<?> getCarsCountByFilter(CarSearchDto carSearchDto) {
-        return carService.getCars(carSearchDto, true);
+    public HttpEntity<?> getCarsCountByFilter(CarSearchDto carSearchDto) {
+        return carService.getCarsByFilter(carSearchDto, true);
     }
 
     @GetMapping("/{id}")
-    private HttpEntity<?> getCarById(@PathVariable String id) {
-        return carService.getCarById(Long.parseLong(id));
+    public HttpEntity<?> getCarById(@PathVariable long id) {
+        return carService.getCarById(id);
     }
 
     @PostMapping
-    private HttpEntity<?> addCar(@RequestBody CarDto carDto) {
+    public HttpEntity<?> addCar(@RequestBody CarDto carDto) {
         return carService.addCar(carDto);
     }
 
+    @PutMapping("/{id}")
+    public HttpEntity<?> editCar(@PathVariable long id, @RequestBody CarDto carDto) {
+        return carService.editCar(id, carDto);
+    }
+
     @DeleteMapping("/{id}")
-    private HttpEntity<?> deleteCar(@PathVariable String id) {
+    public HttpEntity<?> deleteCar(@PathVariable long id) {
         return carService.deleteCar(id);
     }
 }

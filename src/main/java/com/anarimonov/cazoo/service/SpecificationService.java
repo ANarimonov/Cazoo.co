@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+
 @Service
 @RequiredArgsConstructor
 public class SpecificationService {
@@ -17,22 +20,36 @@ public class SpecificationService {
     private final CarRepository carRepository;
 
     public HttpEntity<?> addSpecification(SpecificationDto specificationDto) {
-        Specification specification = new Specification();
-        specification.setId(specificationDto.getId());
-        specification.setCar(carRepository.findById(specificationDto.getCarId()).orElseThrow(() -> new RuntimeException("Car id must not be null")));
-        specification.setAcceleration(specificationDto.getAcceleration());
-        specification.setCylinders(specificationDto.getCylinders());
-        specification.setHeight(specificationDto.getHeight());
-        specification.setLength(specificationDto.getLength());
-        specification.setValves(specificationDto.getValves());
-        specification.setWeight(specificationDto.getWeight());
-        specification.setWheelbase(specificationDto.getWheelbase());
-        specification.setWidth(specificationDto.getWidth());
-        specification.setBootSpace(specificationDto.getBootSpace());
-        specification.setEnginePower(specificationDto.getEnginePower());
-        specification.setTopSpeed(specificationDto.getTopSpeed());
-        specification.setFuelCapacity(specificationDto.getFuelCapacity());
+        Specification specification = specificationSetter(null, specificationDto);
         specificationRepository.save(specification);
-        return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
+        return ResponseEntity.status(HttpStatus.valueOf(201)).body("Successfully added");
+    }
+
+    public HttpEntity<?> editSpecification(SpecificationDto specificationDto, Long id) {
+        Specification specification = specificationSetter(id, specificationDto);
+        specificationRepository.save(specification);
+        return ResponseEntity.ok().body("Successfully updated");
+    }
+
+    private Specification specificationSetter(Long id, SpecificationDto specificationDto) {
+        Specification specification = id == null ? new Specification() : specificationRepository.findById(id).orElseThrow();
+        specification.setCar(carRepository.findById(specificationDto.getCarId()).orElseThrow(() -> new RuntimeException("Car id must not be null")));
+        Arrays.stream(SpecificationDto.class.getDeclaredFields())
+                .forEach(field -> setPropertyIfNotNull(field, specificationDto, specification));
+        return specification;
+    }
+
+    private void setPropertyIfNotNull(Field field, SpecificationDto dtoObj, Specification obj) {
+        try {
+            field.setAccessible(true);
+            Object value = field.get(dtoObj);
+            if (value != null) {
+                Field specificationField = Specification.class.getDeclaredField(field.getName());
+                specificationField.setAccessible(true);
+                specificationField.set(obj, value);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }

@@ -20,7 +20,7 @@ public class Model {
     }
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
     private String name;
     @ManyToOne
     private Maker maker;

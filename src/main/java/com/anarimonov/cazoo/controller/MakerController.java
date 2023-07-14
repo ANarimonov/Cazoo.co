@@ -14,24 +14,24 @@ import org.springframework.web.bind.annotation.*;
 public class MakerController {
     private final MakerRepository makerRepository;
     @GetMapping
-    private HttpEntity<?> getAllMaker() {
+    public HttpEntity<?> getAllMaker() {
         return ResponseEntity.ok(makerRepository.findAll());
     }
 
     @GetMapping("/{id}")
-    private HttpEntity<?> getMaker(@PathVariable String id) {
-        return ResponseEntity.ok(makerRepository.findById(Long.parseLong(id)).orElseThrow());
+    public HttpEntity<?> getMaker(@PathVariable long id) {
+        return ResponseEntity.ok(makerRepository.findById(id).orElseThrow());
     }
 
     @PostMapping
-    private HttpEntity<?> addMaker(@RequestBody Maker maker) {
+    public HttpEntity<?> addMaker(@RequestBody Maker maker) {
         makerRepository.save(maker);
         return ResponseEntity.status(HttpStatus.valueOf(201)).body("success");
     }
 
     @DeleteMapping("/{id}")
-    private HttpEntity<?> deleteMaker(@PathVariable String id) {
-        makerRepository.deleteById(Long.parseLong(id));
+    public HttpEntity<?> deleteMaker(@PathVariable long id) {
+        makerRepository.deleteById(id);
         return ResponseEntity.ok("success");
     }
 }

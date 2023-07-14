@@ -19,7 +19,7 @@ import java.util.List;
 public class Car{
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
     @ManyToOne
     private Maker maker;
     @ManyToOne

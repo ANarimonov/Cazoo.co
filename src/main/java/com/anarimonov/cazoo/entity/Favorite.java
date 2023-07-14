@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Favorite {
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
     @ManyToOne
     private User user;
     @ManyToOne

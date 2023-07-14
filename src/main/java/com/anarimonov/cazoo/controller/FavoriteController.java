@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.*;
 public class FavoriteController {
     private final FavoriteService favoriteService;
     @GetMapping("/{userId}")
-    private HttpEntity<?> getFavorites(@PathVariable String userId) {
+    public HttpEntity<?> getFavorites(@PathVariable long userId) {
         return favoriteService.getFavoritesByUser(userId);
     }
 
     @PostMapping
-    private HttpEntity<?> addToFavorites(@RequestBody FavoriteDto favoriteDto) {
+    public HttpEntity<?> addToFavorites(@RequestBody FavoriteDto favoriteDto) {
         return favoriteService.addCarToFavorites(favoriteDto);
     }
 
     @DeleteMapping("/{favoriteId}")
-    private HttpEntity<?> removeFromFavorites(@PathVariable String favoriteId) {
+    public HttpEntity<?> removeFromFavorites(@PathVariable long favoriteId) {
         return favoriteService.deleteFavorite(favoriteId);
     }
 }
